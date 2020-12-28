@@ -18,8 +18,8 @@ method = “SERr” for richness based turnover and method =“SERa” for abund
  
  `lSER$S_common, lSER$S_ext, lSER$S_imm, lSER$S_total` are upper triangle MxM matrices  
  with the effective number of common/extinct/immigrating/total species,
- e.g., `SER$S_total[i,j]` is the total number of species in observation i and j
- and  `lSER$S_ext[i,j]` is the number of species present in X[i, ] but not in X[j, ]
+ e.g., `SER$S_total[i,j]` is the total effective number of species in observation i and j
+ and  `lSER$S_ext[i,j]` is the effective number of species present in X[i, ] but not in X[j, ]
  
  Note that the effective species numbers are richness based when  `method="SERr"` and 
  abundance (Simpson index) based when `method="SERa"`, 

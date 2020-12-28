@@ -22,12 +22,12 @@ source("turnover.R")
 
 ##read and normalize data
 ##
-data <- read.csv( file = "Species.csv")
+data = read.csv( file = "Species.csv")
 # Date,X,Y,Species1,Species2,...
 
 #number of rows and columns
-M <- nrow(data)
-N <- ncol(data)
+M = nrow(data)
+N = ncol(data)
 
 #Define columns with species abundance data
 SpecColumns = 4:N;
@@ -71,5 +71,4 @@ plot(lSERa$TimeIntv/365, lSERa$SER)
 XY = data[, 2:3]; 
 lSERa = turnover(data[, SpecColumns], method = "SERa", locations =  XY)
 plot(lSERa$Dist, lSERa$SER)
-
 ```

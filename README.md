@@ -3,10 +3,10 @@ R functions for calculating the species turnover, based on Hillebrand et al. (20
 
 Input is an (M x N) table or matrix with M observations of N species and (optionally) observation dates and locations.
 
-There are two main function  `turnover` and `turnover_s`
+There are two main function  `turnover` and `turnover_s`.
 
 `SER = turnover_s(X, method)` is a short version which returns an upper triangle matrix with turnover indexes between different rows. SER[i, j] is turnover between X[i, ] and X[j, ]. 
-method = “SERr” for richness based turnover and “SERa” for abundance based turnover
+method = “SERr” for richness based turnover and method =“SERa” for abundance based turnover.
 
 `lSER = turnover(X, method)` returns a list of upper triangle matrices with the turnover indexes and  effective numbers of common/extinct/immigrating/total species. Again element i,j of each matrix describes changes in species composition from observation X[i, ] to X[j, ].
 

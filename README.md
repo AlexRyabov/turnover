@@ -1,5 +1,5 @@
 # Species turnover index
-R functions for calculating the species turnover, based on Hillebrand et al. (2018). *Biodiversity change is uncoupled from species richness trends: Consequences for conservation and monitoring.* J Appl Ecol, 55, 169–184.
+R functions for calculating the species turnover, based on Hillebrand et al. (2018). *Biodiversity change is uncoupled from species richness trends: Consequences for conservation and monitoring.* J Appl Ecol, 55, 169–184. https://besjournals.onlinelibrary.wiley.com/doi/full/10.1111/1365-2664.12959
 
 Input is an (M x N) table or matrix with M observations of N species and (optionally) observation dates and locations.
 

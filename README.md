@@ -42,7 +42,7 @@ on species turnover within each group.
 
 ```R
 #' Alexey Ryabov 2020
-#' examples of using turnover and turnover_s
+#' examples of using turnover, turnover_s and turnover_g
 
 source("turnover.R")
 
@@ -123,12 +123,6 @@ GrID = 1;
 lSERa_gr$groupnames[GrID]
 plot(lSERa_gr$turnover[[GrID]]$TimeIntv, lSERa_gr$turnover[[GrID]]$SER)
 
-
-
-#plot turnover index as a function of distance between observations
-XY = data[, 2:3]; 
-lSERa = turnover(data[, SpecColumns], method = "SERa", locations =  XY)
-plot(lSERa$Dist, lSERa$SER)
 
 
 ```

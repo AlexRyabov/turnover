@@ -1,7 +1,7 @@
 #' Alexey Ryabov 2020
 #' Calculate species turnover index
 #' see details in 
-#' Hillebrand, H. et al. J Appl Ecol 55, 169–184 (2018).
+#' Hillebrand, H. et al. J Appl Ecol 55, 169-184 (2018).
 
 #' 
 #' @description
@@ -23,11 +23,22 @@
 #' and  lSER$S_ext[i,j] the number of species observed in i but not in j
 #' Note that the effective species number is richness based when  method="SERr" and 
 #' abundance (Simpson index) based when method="SERa", 
-#' see details in Hillebrand, H. et al. J Appl Ecol 55, 169–184 (2018).
+#' see details in Hillebrand, H. et al. J Appl Ecol 55, 169-184 (2018).
 #' 
 #' lSER$TimeIntv[i,j] time intervals between observation i and j
 #' 
 #' lSER$Dist[i,j]  spatial distances between observation i and j
+#' 
+#' 
+#' lSER_gr = turnover_g(X, method = "SERa", dates = NULL, locations = NULL, groupby)
+#' This function calculates turnover within groups defined by groupby dataframe. 
+#' The groupby must contain the same number of rows as X. The function splits X 
+#' into groups and returns a sheet with two fields: lSER_gr$groupnames contains 
+#' unique group names, lSER_gr$turnover contains information on species turnover 
+#' within each group. 
+#' 
+#' 
+#' 
 #' 
 #' 
 
@@ -47,6 +58,9 @@
 #' @param locations spatial coordinates, typically should be Mx1, for 1D gradients, 
 #' Mx2 matrix if 2 coordinates are know, or Mx3 matrix for a 3D habitats
 #'  
+#' @param groupby (M x ..) a 'factor' in the sense that as.factor(f) defines 
+#' the grouping, or a list of such factors in which case their interaction 
+#' is used for the grouping.  (see split(x, ...) function)
 #'  
 #'  
 
@@ -57,6 +71,19 @@
 #' 
 #' lSER = turnover_s(X, method = "SERa", dates)
 #' lSER = turnover_s(X, method = "SERa", NULL, location)
+#' 
+#' Calculating temporal species turnover separately for multiple 
+#' stations 
+#' lSER_gr = turnover_g(X, method = "SERa", ObservationDates, locations = NULL, StationList)
+#' where StationList is a data frame with station names for each observation. 
+#' Output: lSER_gr$groupnames contains a list of unique station names, 
+#' lSER_gr$turnover is a list of turnover information for those stations. 
+#' The elements of this list have a structure returned by the function 
+#' lSER = turnover(X, ...)
+#' For example, the name of the second group 
+#' lSERa_gr$groupnames[2] 
+#' Plot temporal turnover for the second group 
+#' plot(lSERa_gr$turnover[[2]]$TimeIntv, lSERa_gr$turnover[[2]]$SER)
 #' 
 
 
@@ -82,6 +109,22 @@ turnover_s <- function (X, method = "SERr") {
 }
 
 
+turnover_g <- function(X, method = "SERr", dates = NULL, locations = NULL, groupby = GroupBy){
+  Xsplit = split(X, groupby);
+  if (!is.null(dates))     { DatesSplit = split(dates,     groupby)}
+  DatesPiece = NULL;
+  if (!is.null(locations)) { LocSplit   = split(locations, groupby)}
+  LocPiece = NULL;  
+  Res <- vector(mode = "list", length = length(Xsplit))
+  for(i in 1:length(Xsplit)){
+    if (!is.null(dates))      { DatesPiece = DatesSplit[[i]]}
+    if (!is.null(locations))  { LocPiece =   LocSplit[[i]]}
+    
+     Res[[i]] =  turnover(Xsplit[[i]], method, DatesPiece, LocPiece)
+  }
+  return(list(groupnames = names(Xsplit), 'turnover' = Res))
+}
+
 
 turnover <- function (X, method = "SERr", dates = NULL, locations = NULL) {
   switch(method, 
@@ -104,7 +147,7 @@ turnover <- function (X, method = "SERr", dates = NULL, locations = NULL) {
     
     M2 = length(dates)
     if (M != M2){
-      stop("the lenght of dates array should be equal the number of rows in X")
+      stop("The length of the dates array must be equal to the number of rows in X")
     }
     
     #find differences in dates (if not null) or interval between columns
@@ -132,7 +175,7 @@ turnover <- function (X, method = "SERr", dates = NULL, locations = NULL) {
     M <- nrow(X);
     M2 = nrow(locations)
     if (M != M2){
-      stop("the number of rows in location  should be equal the number of rows in X")
+      stop("The number of rows in the location matrix must be equal to the number of rows in X.")
     }    
     Dist = as.matrix(dist(locations, method = "euclidean", diag = TRUE, upper = TRUE, p = 2))
     for(i in 2:M){

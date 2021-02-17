@@ -5,7 +5,7 @@ Input is an (M x N) table or matrix with M observations of N species and (option
 
 `turnover <- function (X, method = "SERr",  combinations = "i<j", 
                       dates = NULL, locations = NULL, measure = "euclidean", 
-                      ext_inv = FALSE, groupby = NULL, RowID = NULL) `
+                      ext_inv = FALSE, groupby = NULL) `
 
  This function returns a data frame lSER of the turnover between rows i and j 
  of matrix X. lSER$From = i, lSER$To = j, lSER$SER is the turnover between these rows. 

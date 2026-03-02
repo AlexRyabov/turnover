@@ -1,4 +1,4 @@
-#' Alexey Ryabov 2020
+#' Alexey Ryabov 2026
 #' Calculate species turnover index
 #' see details in 
 #' Hillebrand, H. et al. J Appl Ecol 55, 169-184 (2018).
@@ -112,10 +112,10 @@ turnover_s <- function (X, method = "SERr", combinations = "i<j") {
   #X is  (M x N) table or matrix with M observations of abundances of N species, 
   #M observation -- rows
   #N species -- columns
-
+  
   #method = 'SERa' output is based on relative species frequencies
   # SER_ij = (sum_k pik^2 + sum_k pjk^2 - 2 * sum_k( pik * pjk) ) / (sum_k pik^2 + sum_k pjk^2 -  sum_k( pik * pjk) )
-
+  
   #method = 'SERr' output is based on presence/absence data
   #SER_ij  = (S_immigrant + S_extinct)/S_total
   
@@ -134,10 +134,10 @@ turnover <- function (X, method = "SERr",  combinations = "i<j",
   if (!is.null(groupby))  {#if groups, then split and call turnover for each group
     RowID = c(1:M); #assign row ID
     RowIDSplit = split(RowID, groupby);
-    Xsplit = split(X, groupby);
+    Xsplit = split(as.data.frame(X), groupby);
     if (!is.null(dates))     { DatesSplit = split(dates,     groupby)}
     DatesPiece = NULL;
-    if (!is.null(locations)) { LocSplit   = split(locations, groupby)}
+    if (!is.null(locations)) { LocSplit   = split(as.data.frame(locations), groupby)}
     LocPiece = NULL;  
     Res = NULL;
     GroupNames = names(Xsplit)
@@ -177,9 +177,9 @@ turnover <- function (X, method = "SERr",  combinations = "i<j",
     RowIDs = rep.int(RowID, M);
     i_ind = matrix(RowIDs, nrow=M,byrow = FALSE);
     j_ind = matrix(RowIDs, nrow=M,byrow = TRUE);
-
-  
-        
+    
+    
+    
     ord_ind = mat_index(Res$SER, combinations);
     
     From    = i_ind[ord_ind];
@@ -190,13 +190,13 @@ turnover <- function (X, method = "SERr",  combinations = "i<j",
       S_common= Res$S_common[ord_ind];
       S_imm   = Res$S_imm[ord_ind];
       S_ext   = Res$S_ext[ord_ind];
-      Result = data.frame(From, To, SER, S_total, S_common, S_ext);
+      Result = data.frame(From, To, SER, S_total, S_common, S_ext, S_imm);
     }
     else {
       Result = data.frame(From, To, SER);
     }
-
-   if (!is.null(dates)){
+    
+    if (!is.null(dates)){
       #get number of records 
       M <- nrow(X);
       M2 = length(dates)
@@ -227,8 +227,10 @@ turnover <- function (X, method = "SERr",  combinations = "i<j",
         stop("The number of rows in the location matrix must be equal to the number of rows in X.")
       }    
       if (tolower(measure)  == "lonlat") {
-        library("geodist");
-        Dist = geodist(locations, paired = TRUE, measure = "geodesic");
+        if (!requireNamespace("geodist", quietly = TRUE)) {
+          stop("Package 'geodist' is required for measure='lonlat'. Install it via install.packages('geodist').")
+        }
+        Dist <- geodist::geodist(locations, sequential = FALSE, paired = FALSE, measure = "geodesic");
         Result$Dist = Dist[ord_ind];
       }else{
         Dist = as.matrix(dist(locations, method = measure, diag = TRUE, upper = TRUE, p = 2))
@@ -240,7 +242,7 @@ turnover <- function (X, method = "SERr",  combinations = "i<j",
 }
 
 
-  
+
 
 turnover_a <- function(X, method) {
   X = as.matrix(X)
@@ -248,13 +250,22 @@ turnover_a <- function(X, method) {
   dims = dim(X)
   M = dims[1];
   N = dims[2];
-
-    
+  
+  
   #to calculate abundance based turnover index, the data should be normalized
   #each row should contain species frequencies, for row j, \sum_i(p_ij)=1
-  s = rowSums(X);
-  Sums = matrix(rep(s, N), M, N);
-  X = X/Sums;
+  s <- rowSums(X, na.rm = TRUE);
+  zero_rows <- which(is.na(s) | s == 0);
+  if (length(zero_rows) > 0) {
+    warning(paste0(
+      "SERa undefined for rows with zero total abundance. Pairs involving these rows will be NA. Rows: ",
+      paste(zero_rows, collapse = ", ")
+    ));
+    X[zero_rows, ] <- NA_real_;
+    s[zero_rows] <- NA_real_;
+  }
+  Sums <- matrix(rep(s, N), M, N);
+  X <- X / Sums;
   
   
   
@@ -266,18 +277,18 @@ turnover_a <- function(X, method) {
   S2 = 1/P2_sq; #in each column the number of species in row i
   
   P12  = X %*% t(X);  #overlap 
-
+  
   #find invaded, common and etc species 
   S_common  = (P12)/(P1_sq * P2_sq) ;
   S_ext   = S1 - S_common;
   S_imm   = S2 - S_common;
   S_total = S1 + S2 - S_common;
-
+  
   SER = (S_imm + S_ext)/S_total;
   #SER2 = (P1_sq + P2_sq - 2 * P12)/(P1_sq + P2_sq - P12);
   
   Result = list(SER=SER, S_total = S_total, S_common = S_common, S_imm = S_imm, S_ext = S_ext);
- 
+  
   return(Result)
 }
 
@@ -290,9 +301,9 @@ turnover_r <- function(X, method) {
   
   P1 = as.matrix(X > 0)*1;
   P2 = t(P1);
-
+  
   S_common = P1 %*% P2;
-
+  
   S_sample = as.matrix(rowSums(X>0));  #number of species in each sample
   S_sample =rep(S_sample, M);
   S1 =matrix(S_sample, M, M, byrow = FALSE); #put number of species columnwise  
@@ -349,6 +360,6 @@ mat_index <- function(SampleMatrix, combinations){
     indL = lower.tri(SampleMatrix, diag=TRUE);
     ind = indL | indU;
   }
-          
-return(ind);
+  
+  return(ind);
 }

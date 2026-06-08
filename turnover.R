@@ -153,15 +153,15 @@
   #abundance based turnover characteristics (list of turnover values + other metrics) 
 #'  turnover_df_a = turnover(data[, SpecColumns], method = "SERa", ext_inv = TRUE)
 #' 
-#' turnover_s() is a convenience wrapper for species data only. It accepts X,
-#' method, and combinations, and does not add dates, locations, or grouping.
-#' TO_SERa = turnover_s(X, method = "SERa")
-#' 
-#' TO_SERr = turnover_s(X, method = "SERr")
+#' TO_SERr = turnover(X, method = "SERr")
+#' TO_U0 = turnover(X, method = "U0")
+#' TO_Horn = turnover(X, method = "Horn")
+#' TO_U1 = turnover(X, method = "U1")
+#' TO_SERa = turnover(X, method = "SERa")
+#' TO_U2 = turnover(X, method = "U2")
 #'
-#' TO_Horn = turnover_s(X, method = "Horn")
-#'
-#' TO_U2 = turnover_s(X, method = "U2")
+#' turnover_s() is a convenience wrapper for species-only calculations:
+#' TO_SERr_short = turnover_s(X, method = "SERr")
 #' 
 #' turnover_df = turnover(X, method = "SERa", dates = dates)
 #' spatial turnover, when coordinates are longitude and lattitude 

@@ -1,8 +1,8 @@
 # Community Turnover (Overlap) Indices
 
-R functions for calculating community turnover (overlap) indices between pairs of community observations.
+R functions for calculating pairwise community turnover (overlap) indices.
 
-The main implementation and detailed API documentation are in [turnover.R](turnover.R). Complete runnable examples are in [turnover_examples.R](turnover_examples.R).
+The main implementation and detailed API documentation are in [turnover.R](turnover.R). Complete runnable examples using `Species.csv` are in [turnover_examples.R](turnover_examples.R).
 
 References:
 
@@ -13,7 +13,7 @@ References:
 
 Input is an `M x N` table or matrix `X`, where rows are community observations and columns are species abundances, frequencies, or presence/absence values.
 
-Optional vectors or data frames can add observation dates, spatial coordinates, and grouping variables.
+Optional vectors or data frames can provide observation dates, spatial coordinates, and grouping variables.
 
 ## Main Functions
 
@@ -36,7 +36,7 @@ turnover(
 turnover_s(X, method = "SERr", combinations = "i<j")
 ```
 
-`turnover_s()` is a short wrapper for cases where only species data are used, without dates, locations, or grouping.
+`turnover_s()` is a convenience wrapper for species-only calculations. It is equivalent to calling `turnover()` without `dates`, `locations`, `ext_inv`, or `groupby`.
 
 ## Methods
 
@@ -58,12 +58,12 @@ data <- read.csv("Species.csv")
 SpecColumns <- 4:ncol(data)
 X <- data[, SpecColumns]
 
-SERr <- turnover_s(X, method = "SERr")
-U0 <- turnover_s(X, method = "U0")
-Horn <- turnover_s(X, method = "Horn")
-U1 <- turnover_s(X, method = "U1")
-SERa <- turnover_s(X, method = "SERa")
-U2 <- turnover_s(X, method = "U2")
+SERr <- turnover(X, method = "SERr")
+U0 <- turnover(X, method = "U0")
+Horn <- turnover(X, method = "Horn")
+U1 <- turnover(X, method = "U1")
+SERa <- turnover(X, method = "SERa")
+U2 <- turnover(X, method = "U2")
 
 SampleDates <- as.Date(data$Date, format = "%Y-%m-%d")
 XY <- data[, 2:3]

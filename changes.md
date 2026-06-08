@@ -1,4 +1,16 @@
+Changes for community turnover (overlap) indices
+
 Changes 02.03.2026 
+
+Changes 03.06.2026
+
+* **`method = "Horn"`: exposed Horn dissimilarity through `turnover()`**
+  `turnover_h()` can now be called via `turnover(X, method = "Horn", ...)` and
+  therefore also through `turnover_s(X, method = "Horn")`.
+
+* **Documentation: corrected grouped turnover description**
+  Grouped turnover is currently implemented through `turnover(..., groupby = ...)`.
+  The README and examples no longer refer to an undefined `turnover_g()` function.
 
 * **`ext_inv = TRUE`: added `S_imm` to the output data frame**
 
